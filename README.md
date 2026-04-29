@@ -8,7 +8,7 @@ A purpose-built, browser-based CRM (Customer Relationship Management) web app fo
 
 ## 🔗 Live Demo
 
-**[View on GitHub Pages](https://732198.github.io/persephonebasket-crm)**
+**[View on GitHub Pages](https://732198.github.io/side-project)**
 
 ---
 
