@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Persephone's Basket — CRM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <h1>Persephone's<br><span>Basket</span></h1>
+      <p>CRM Dashboard</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Views</div>
+      <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Contacts
+      </button>
+      <button class="nav-btn" data-view="pipeline" onclick="switchView('pipeline')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="4" height="18"/><rect x="10" y="3" width="4" height="18"/><rect x="17" y="3" width="4" height="18"/></svg>
+        Pipeline
+      </button>
+
+      <div class="nav-label" style="margin-top:24px;">Filter by Type</div>
+      <button class="nav-btn filter-btn active" data-filter="all" onclick="setFilter('all')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+        All Contacts
+      </button>
+      <button class="nav-btn filter-btn" data-filter="Farmer" onclick="setFilter('Farmer')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 10"/></svg>
+        Farmers
+      </button>
+      <button class="nav-btn filter-btn" data-filter="Advisor" onclick="setFilter('Advisor')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Advisors
+      </button>
+      <button class="nav-btn filter-btn" data-filter="Investor" onclick="setFilter('Investor')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+        Investors
+      </button>
+      <button class="nav-btn filter-btn" data-filter="Partner" onclick="setFilter('Partner')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Partners
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="stat-pill" id="total-count">0 contacts</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main id="main">
+
+    <!-- DASHBOARD VIEW -->
+    <section id="view-dashboard" class="view active">
+      <div class="view-header">
+        <div>
+          <h2>Contacts</h2>
+          <p class="view-sub">Manage your farmers, advisors, investors & partners</p>
+        </div>
+        <div class="header-actions">
+          <div class="search-wrap">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Search contacts…" oninput="renderContacts()" />
+          </div>
+          <button class="btn-primary" onclick="openModal()">+ Add Contact</button>
+        </div>
+      </div>
+
+      <div id="contacts-grid" class="contacts-grid"></div>
+      <div id="empty-state" class="empty-state" style="display:none;">
+        <p>🌱</p>
+        <h3>No contacts yet</h3>
+        <p>Add your first farmer, advisor, or investor to get started.</p>
+        <button class="btn-primary" onclick="openModal()">+ Add Contact</button>
+      </div>
+    </section>
+
+    <!-- PIPELINE VIEW -->
+    <section id="view-pipeline" class="view">
+      <div class="view-header">
+        <div>
+          <h2>Pipeline</h2>
+          <p class="view-sub">Track relationship stages across your network</p>
+        </div>
+      </div>
+      <div class="kanban-board" id="kanban-board">
+        <div class="kanban-col" data-stage="Prospect">
+          <div class="kanban-col-header">
+            <span class="stage-dot prospect"></span>
+            <span class="col-title">Prospect</span>
+            <span class="col-count" id="count-Prospect">0</span>
+          </div>
+          <div class="kanban-cards" id="col-Prospect"></div>
+        </div>
+        <div class="kanban-col" data-stage="Outreach">
+          <div class="kanban-col-header">
+            <span class="stage-dot outreach"></span>
+            <span class="col-title">Outreach</span>
+            <span class="col-count" id="count-Outreach">0</span>
+          </div>
+          <div class="kanban-cards" id="col-Outreach"></div>
+        </div>
+        <div class="kanban-col" data-stage="Active">
+          <div class="kanban-col-header">
+            <span class="stage-dot active-stage"></span>
+            <span class="col-title">Active</span>
+            <span class="col-count" id="count-Active">0</span>
+          </div>
+          <div class="kanban-cards" id="col-Active"></div>
+        </div>
+        <div class="kanban-col" data-stage="Partner">
+          <div class="kanban-col-header">
+            <span class="stage-dot partner-stage"></span>
+            <span class="col-title">Partner</span>
+            <span class="col-count" id="count-Partner">0</span>
+          </div>
+          <div class="kanban-cards" id="col-Partner"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ADD / EDIT MODAL -->
+  <div id="modal-overlay" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Contact</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="field-id" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="field-name" placeholder="Jane Smith" />
+          </div>
+          <div class="form-group">
+            <label>Type *</label>
+            <select id="field-type">
+              <option value="">Select type…</option>
+              <option>Farmer</option>
+              <option>Advisor</option>
+              <option>Investor</option>
+              <option>Partner</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="field-email" placeholder="jane@example.com" />
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="field-location" placeholder="e.g. Concord, NH" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stage *</label>
+            <select id="field-stage">
+              <option value="">Select stage…</option>
+              <option>Prospect</option>
+              <option>Outreach</option>
+              <option>Active</option>
+              <option>Partner</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Crop Types <span class="label-hint">(farmers)</span></label>
+            <input type="text" id="field-crops" placeholder="e.g. Corn, Soybean" />
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea id="field-notes" rows="3" placeholder="Any context, last interaction, follow-up…"></textarea>
+        </div>
+
+        <div id="form-error" class="form-error" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveContact()">Save Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div id="detail-overlay" class="modal-overlay" onclick="closeDetailOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="detail-name">Contact</h3>
+        <button class="modal-close" onclick="closeDetail()">✕</button>
+      </div>
+      <div class="modal-body" id="detail-body"></div>
+      <div class="modal-footer">
+        <button class="btn-danger" onclick="deleteFromDetail()">Delete</button>
+        <button class="btn-ghost" onclick="closeDetail()">Close</button>
+        <button class="btn-primary" onclick="editFromDetail()">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
