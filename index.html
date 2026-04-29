@@ -25,6 +25,10 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="4" height="18"/><rect x="10" y="3" width="4" height="18"/><rect x="17" y="3" width="4" height="18"/></svg>
         Pipeline
       </button>
+      <button class="nav-btn" data-view="calendar" onclick="switchView('calendar')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+      </button>
 
       <div class="nav-label" style="margin-top:24px;">Filter by Type</div>
       <button class="nav-btn filter-btn active" data-filter="all" onclick="setFilter('all')">
@@ -48,7 +52,6 @@
         Partners
       </button>
     </nav>
-
     <div class="sidebar-footer">
       <div class="stat-pill" id="total-count">0 contacts</div>
     </div>
@@ -71,14 +74,19 @@
           </div>
           <button class="btn-export" onclick="exportCSV()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export CSV
+            Export
           </button>
+          <button class="btn-export" onclick="document.getElementById('csv-import-input').click()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import CSV
+          </button>
+          <input type="file" id="csv-import-input" accept=".csv" style="display:none" onchange="importCSV(event)" />
           <button class="btn-primary" onclick="openModal()">+ Add Contact</button>
         </div>
       </div>
 
       <!-- STATS BAR -->
-      <div class="stats-bar" id="stats-bar">
+      <div class="stats-bar">
         <div class="stat-card">
           <span class="stat-num" id="stat-total">0</span>
           <span class="stat-label">Total</span>
@@ -128,7 +136,7 @@
           <p class="view-sub">Track relationship stages across your network</p>
         </div>
       </div>
-      <div class="kanban-board" id="kanban-board">
+      <div class="kanban-board">
         <div class="kanban-col" data-stage="Prospect">
           <div class="kanban-col-header">
             <span class="stage-dot prospect"></span>
@@ -164,9 +172,52 @@
       </div>
     </section>
 
+    <!-- CALENDAR VIEW -->
+    <section id="view-calendar" class="view">
+      <div class="view-header">
+        <div>
+          <h2>Calendar</h2>
+          <p class="view-sub">Schedule meetings and emails with your contacts</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-primary" onclick="openEventModal()">+ Schedule</button>
+        </div>
+      </div>
+
+      <div class="calendar-layout">
+        <!-- Month Grid -->
+        <div class="calendar-main">
+          <div class="cal-nav">
+            <button class="cal-nav-btn" onclick="changeMonth(-1)">&#8592;</button>
+            <h3 id="cal-month-label"></h3>
+            <button class="cal-nav-btn" onclick="changeMonth(1)">&#8594;</button>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-day-label">Sun</div>
+            <div class="cal-day-label">Mon</div>
+            <div class="cal-day-label">Tue</div>
+            <div class="cal-day-label">Wed</div>
+            <div class="cal-day-label">Thu</div>
+            <div class="cal-day-label">Fri</div>
+            <div class="cal-day-label">Sat</div>
+            <div id="cal-days"></div>
+          </div>
+        </div>
+
+        <!-- Upcoming Sidebar -->
+        <div class="calendar-sidebar">
+          <div class="upcoming-header">
+            <h4>Upcoming</h4>
+            <span id="upcoming-count" class="col-count">0</span>
+          </div>
+          <div id="upcoming-list" class="upcoming-list"></div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- ADD / EDIT MODAL -->
+  <!-- ADD / EDIT CONTACT MODAL -->
   <div id="modal-overlay" class="modal-overlay" onclick="closeModalOnOverlay(event)">
     <div class="modal">
       <div class="modal-header">
@@ -175,7 +226,6 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="field-id" />
-
         <div class="form-row">
           <div class="form-group">
             <label>Full Name *</label>
@@ -185,14 +235,11 @@
             <label>Type *</label>
             <select id="field-type">
               <option value="">Select type…</option>
-              <option>Farmer</option>
-              <option>Advisor</option>
-              <option>Investor</option>
-              <option>Partner</option>
+              <option>Farmer</option><option>Advisor</option>
+              <option>Investor</option><option>Partner</option>
             </select>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label>Email</label>
@@ -203,16 +250,13 @@
             <input type="text" id="field-location" placeholder="e.g. Concord, NH" />
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label>Stage *</label>
             <select id="field-stage">
               <option value="">Select stage…</option>
-              <option>Prospect</option>
-              <option>Outreach</option>
-              <option>Active</option>
-              <option>Partner</option>
+              <option>Prospect</option><option>Outreach</option>
+              <option>Active</option><option>Partner</option>
             </select>
           </div>
           <div class="form-group">
@@ -220,12 +264,10 @@
             <input type="text" id="field-crops" placeholder="e.g. Corn, Soybean" />
           </div>
         </div>
-
         <div class="form-group full">
           <label>Notes</label>
           <textarea id="field-notes" rows="3" placeholder="Any context, last interaction, follow-up…"></textarea>
         </div>
-
         <div id="form-error" class="form-error" style="display:none;"></div>
       </div>
       <div class="modal-footer">
@@ -243,19 +285,14 @@
         <button class="modal-close" onclick="closeDetail()">✕</button>
       </div>
       <div class="modal-body" id="detail-body"></div>
-
-      <!-- ACTIVITY LOG -->
       <div class="activity-section">
-        <div class="activity-header">
-          <h4>Activity Log</h4>
-        </div>
+        <div class="activity-header"><h4>Activity Log</h4></div>
         <div class="activity-input-row">
           <input type="text" id="activity-input" placeholder="Log an interaction… e.g. Sent intro email" maxlength="200" />
           <button class="btn-primary" onclick="addActivity()">Log</button>
         </div>
         <div id="activity-list" class="activity-list"></div>
       </div>
-
       <div class="modal-footer">
         <button class="btn-danger" onclick="deleteFromDetail()">Delete</button>
         <button class="btn-ghost" onclick="closeDetail()">Close</button>
@@ -263,6 +300,57 @@
       </div>
     </div>
   </div>
+
+  <!-- EVENT MODAL (Schedule meeting/email) -->
+  <div id="event-overlay" class="modal-overlay" onclick="closeEventOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="event-modal-title">Schedule Event</h3>
+        <button class="modal-close" onclick="closeEventModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="event-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Event Type *</label>
+            <select id="event-type">
+              <option value="">Select type…</option>
+              <option value="meeting">📅 Meeting</option>
+              <option value="email">✉️ Email</option>
+              <option value="call">📞 Call</option>
+              <option value="followup">🔔 Follow-up</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Contact *</label>
+            <select id="event-contact"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" id="event-date" />
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="time" id="event-time" />
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea id="event-notes" rows="2" placeholder="What's the agenda or goal of this interaction?"></textarea>
+        </div>
+        <div id="event-error" class="form-error" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeEventModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveEvent()">Save Event</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT RESULT TOAST -->
+  <div id="toast" class="toast"></div>
 
   <script src="app.js"></script>
 </body>
