@@ -69,7 +69,45 @@
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="search-input" placeholder="Search contacts…" oninput="renderContacts()" />
           </div>
+          <button class="btn-export" onclick="exportCSV()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
           <button class="btn-primary" onclick="openModal()">+ Add Contact</button>
+        </div>
+      </div>
+
+      <!-- STATS BAR -->
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat-card">
+          <span class="stat-num" id="stat-total">0</span>
+          <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card">
+          <span class="stat-num farmer-color" id="stat-farmers">0</span>
+          <span class="stat-label">Farmers</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num advisor-color" id="stat-advisors">0</span>
+          <span class="stat-label">Advisors</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num investor-color" id="stat-investors">0</span>
+          <span class="stat-label">Investors</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num partner-color" id="stat-partners">0</span>
+          <span class="stat-label">Partners</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card">
+          <span class="stat-num active-color" id="stat-active">0</span>
+          <span class="stat-label">Active</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num prospect-color" id="stat-prospect">0</span>
+          <span class="stat-label">Prospects</span>
         </div>
       </div>
 
@@ -199,12 +237,25 @@
 
   <!-- DETAIL MODAL -->
   <div id="detail-overlay" class="modal-overlay" onclick="closeDetailOnOverlay(event)">
-    <div class="modal">
+    <div class="modal modal-wide">
       <div class="modal-header">
         <h3 id="detail-name">Contact</h3>
         <button class="modal-close" onclick="closeDetail()">✕</button>
       </div>
       <div class="modal-body" id="detail-body"></div>
+
+      <!-- ACTIVITY LOG -->
+      <div class="activity-section">
+        <div class="activity-header">
+          <h4>Activity Log</h4>
+        </div>
+        <div class="activity-input-row">
+          <input type="text" id="activity-input" placeholder="Log an interaction… e.g. Sent intro email" maxlength="200" />
+          <button class="btn-primary" onclick="addActivity()">Log</button>
+        </div>
+        <div id="activity-list" class="activity-list"></div>
+      </div>
+
       <div class="modal-footer">
         <button class="btn-danger" onclick="deleteFromDetail()">Delete</button>
         <button class="btn-ghost" onclick="closeDetail()">Close</button>
